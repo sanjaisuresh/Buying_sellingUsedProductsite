@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DASHBOARD</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: black;
+            color: #fff;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header .profile-button {
+            background-color: #fff;
+            color: #007bff;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 20px;
+            cursor: pointer;
+            margin-right: 20px;
+        }
+
+        header .nav-button {
+            background-color: #fff;
+            color: #007bff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        header .cart-button {
+            background-color: #fff;
+            color: #007bff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 3px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+
+        main {
+            padding: 20px;
+        }
+
+        .section-title {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .selling-section {
+            /* Display selling section by default */
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .buying-section {
+            display: none;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+        }
+
+        .add-product-button {
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .product-list {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .product-list-item {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .category-selection {
+            margin-bottom: 20px;
+        }
+
+        .category-selection label {
+            font-weight: bold;
+        }
+
+        .category-selection select {
+            padding: 5px;
+        }
+
+        .user-info {
+            flex: 1;
+            margin-left: 10px;
+        }
+
+        .product-image {
+            max-width: 100px;
+            max-height: 100px;
+        }
+
+        .buy-now-button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .product-item {
+            display: flex;
+            align-items: center;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+
+        .product-image {
+            max-width: 100px;
+            max-height: 100px;
+            margin-right: 20px;
+        }
+
+        .product-details {
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div>
+            <button class="nav-button" id="selling-button">Selling</button>
+            <button class="nav-button" id="buying-button">Buying</button>
+
+        </div>
+        <a href="user_profile.php" class="profile-button">User</a>
+    </header>
+
+    <main>
+        <section class="selling-section" id="selling-section">
+            <h2 class="section-title">Sell Your Used Products</h2>
+            <button class="add-product-button" id="add-product-button">+</button>
+
+            <div id="product-form" style="display: none;">
+                <form id="sell-product-form">
+                    <div class="input-group">
+                        <label for="product-name">Product Name:</label>
+                        <input type="text" name="product-name" id="product-name" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="category">Category:</label>
+                        <select name="category" id="category" required>
+                            <option value="electronics">Electronics</option>
+                            <option value="home-appliances">Home Appliances</option>
+                            <option value="cars">Cars</option>
+                            <option value="bikes">Bikes</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="owner-name">Owner Name:</label>
+                        <input type="text" name="owner-name" id="owner-name" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="product-image">Upload Image:</label>
+                        <input type="file" name="product-image" id="product-image" required onchange="displaySelectedImage()">
+                    </div>
+                    <img id="selected-image" class="product-image" src="" alt="Selected Product Image">
+                    <button type="button" class="btn" id="add-product">Add Product</button>
+                </form>
+            </div>
+
+            <!-- Product listing -->
+            <div class="product-list">
+                <!-- Product items will be displayed here -->
+            </div>
+        </section>
+
+        <section class="buying-section" id="buying-section">
+            <h2 class="section-title">Buy Products</h2>
+            <div class="category-selection">
+                <label for="category-select">Select Category:</label>
+                <select name="category" id="category-select">
+                    <option value="car">Car</option>
+                    <option value="bike">Bike</option>
+                    <option value="home_appliance">Home Appliance</option>
+                    <option value="electronics">Electronics</option>
+                </select>
+            </div>
+            <div id="product-container">
+                <!-- Buying section content will be displayed here -->
+            </div>
+        </section>
+    </main>
+    <script>
+
+        // JavaScript function to display the selected image
+        function displaySelectedImage() {
+            const fileInput = document.getElementById('product-image');
+            const selectedImage = document.getElementById('selected-image');
+
+            // Check if a file is selected
+            if (fileInput.files.length > 0) {
+                const selectedFile = fileInput.files[0];
+
+                // Create a URL for the selected image
+                const imageUrl = URL.createObjectURL(selectedFile);
+
+                // Set the src attribute of the <img> element to the created URL
+                selectedImage.src = imageUrl;
+            } else {
+                // If no file is selected, clear the <img> element
+                selectedImage.src = '';
+            }
+        }
+            // JavaScript code for displaying product information
+            // JavaScript code for displaying product information
+        document.getElementById('add-product-button').addEventListener('click', function () {
+            document.getElementById('product-form').style.display = 'block';
+        });
+
+        document.getElementById('add-product').addEventListener('click', function () {
+            // Retrieve product information from the form
+            const productName = document.getElementById('product-name').value;
+            const category = document.getElementById('category').value;
+            const ownerName = document.getElementById('owner-name').value;
+
+            // Create HTML elements to display the product information
+            const productItem = document.createElement('div');
+            productItem.classList.add('product-item');
+            productItem.innerHTML = `
+                <img class="product-image" src="${document.getElementById('selected-image').src}" alt="Product Image">
+                <div class="product-details">
+                    <p>Product Name: ${productName}</p>
+                    <p>Category: ${category}</p>
+                    <p>Owner Name: ${ownerName}</p>
+                </div>
+            `;
+
+            // Append the product item to the product list container
+            const productContainer = document.querySelector('.product-list');
+            productContainer.appendChild(productItem);
+
+            // Reset the form or hide it
+            document.getElementById('product-form').style.display = 'none';
+
+            // Clear form fields
+            document.getElementById('sell-product-form').reset();
+            // Clear the selected image
+            document.getElementById('selected-image').src = '';
+        });
+
+        const sellingButton = document.getElementById('selling-button');
+        const buyingButton = document.getElementById('buying-button');
+        const sellingSection = document.getElementById('selling-section');
+        const buyingSection = document.getElementById('buying-section');
+        const addProductButton = document.getElementById('add-product-button');
+        const productForm = document.getElementById('product-form');
+        const categorySelect = document.getElementById('category-select');
+        const productContainer = document.getElementById('product-container');
+
+        sellingButton.addEventListener('click', () => {
+            sellingSection.style.display = 'block';
+            buyingSection.style.display = 'none';
+        });
+
+        buyingButton.addEventListener('click', () => {
+            sellingSection.style.display = 'none';
+            buyingSection.style.display = 'block';
+        });
+
+        addProductButton.addEventListener('click', () => {
+            productForm.style.display = 'block';
+        });
+
+
+        const products = [
+            { category: 'car', name: 'Car 1', image: 'car.jpeg', userName: 'User 1', phoneNumber: '123-456-7890', price: '$10,000', year: '2020' },
+            { category: 'car', name: 'Car 2', image: 'car2.jpeg', userName: 'User 2', phoneNumber: '987-654-3210', price: '$15,000', year: '2019' },
+            { category: 'car', name: 'Car 3', image: 'car3.jpeg', userName: 'User 3', phoneNumber: '555-555-5555', price: '$8,000', year: '2018' },
+            { category: 'bike', name: 'Bike 1', image: 'bike.jpeg', userName: 'User 4', phoneNumber: '111-222-3333', price: '$1,000', year: '2021' },
+            { category: 'bike', name: 'Bike 2', image: 'bike2.jpeg', userName: 'User 5', phoneNumber: '999-888-7777', price: '$800', year: '2020' },
+            { category: 'bike', name: 'Bike 3', image: 'bike3.jpeg', userName: 'User 6', phoneNumber: '777-666-5555', price: '$1,200', year: '2019' },
+            { category:'electronics',name:'home1',image:'ele.jpeg',username:'user',phoneNumber:'123456789',price:'$400',year:'2023'},
+            { category:'home_appliance',name:'home1',image:'home.jpeg',username:'user',phoneNumber:'123456789',price:'$400',year:'2023'},
+            { category:'home_appliance',name:'home1',image:'home.jpeg',username:'user',phoneNumber:'123456789',price:'$400',year:'2023'},
+            { category:'electronics',name:'home1',image:'ele.jpeg',username:'user',phoneNumber:'123456789',price:'$400',year:'2023'},
+            { category:'electronics',name:'home1',image:'ele.jpeg',username:'user',phoneNumber:'123456789',price:'$400',year:'2023'},
+            { category:'home_appliance',name:'home1',image:'home.jpeg',username:'user',phoneNumber:'123456789',price:'$400',year:'2023'}
+             
+
+        ];
+
+        function filterProducts(category) {
+            return products.filter(product => product.category === category);
+        }
+
+        function updateProductList(category) {
+            const filteredProducts = filterProducts(category);
+            productContainer.innerHTML = '';
+
+            filteredProducts.forEach(product => {
+                const productItem = document.createElement('div');
+                productItem.classList.add('product-list-item');
+
+                const productImage = document.createElement('img');
+                productImage.classList.add('product-image');
+                productImage.src = product.image;
+                productItem.appendChild(productImage);
+
+                const productInfo = document.createElement('div');
+                productInfo.classList.add('user-info');
+
+                const productName = document.createElement('p');
+                productName.textContent = `Name: ${product.name}`;
+                productInfo.appendChild(productName);
+
+                const productPrice = document.createElement('p');
+                productPrice.textContent = `Price: ${product.price}`;
+                productInfo.appendChild(productPrice);
+
+                const productYear = document.createElement('p');
+                productYear.textContent = `Year: ${product.year}`;
+                productInfo.appendChild(productYear);
+
+                const buyNowButton = document.createElement('button');
+            buyNowButton.classList.add('buy-now-button');
+            buyNowButton.textContent = 'Buy Now';
+
+            // Pass product details as a URL parameter when the button is clicked
+            buyNowButton.addEventListener('click', () => {
+                // Redirect to the "buying.php" page with the product name as a parameter
+                window.location.href = 'buying.php?product=' + encodeURIComponent(product.name);
+            });
+
+                productInfo.appendChild(buyNowButton);
+
+                productItem.appendChild(productInfo);
+
+                productContainer.appendChild(productItem);
+            });
+        }
+
+        categorySelect.addEventListener('change', () => {
+            const selectedCategory = categorySelect.value;
+            updateProductList(selectedCategory);
+
+            productContainer.style.display = 'block';
+        });
+
+        // Initial display of products based on the default category selection
+        updateProductList(categorySelect.value);
+        productContainer.style.display = 'block';
+    </script>
+</body>
+</html>
